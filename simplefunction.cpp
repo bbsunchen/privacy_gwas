@@ -51,7 +51,7 @@ SimpleFunction::~SimpleFunction() {
  */
 double SimpleFunction::singlesnplr (int genotype, double poolfreq, double reffreq) {
 	double lr;
-	switch (genotype){
+	/*switch (genotype){
 		case 0:
 		lr = 2 * log ((1-poolfreq)/(1-reffreq));
 		break;
@@ -70,7 +70,12 @@ double SimpleFunction::singlesnplr (int genotype, double poolfreq, double reffre
 
 		default:
 		assert ("Unknown genotype");
-	}
+	}*/
+    if (genotype == -1){
+        lr = 0;
+    }else{
+        lr = genotype * (poolfreq - reffreq)
+    }
 	return lr;
 }
 
