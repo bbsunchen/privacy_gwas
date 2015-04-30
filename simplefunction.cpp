@@ -3,7 +3,7 @@
 #include "functions.h"
 #include "roc.h"
 
-SimpleFunction::securegenome (string configfile) {
+SimpleFunction::SimpleFunction (string configfile) {
 	gc = 0;
 	d = new data (configfile);
 	retainedsnps = d->retainedsnps;
@@ -30,7 +30,7 @@ SimpleFunction::securegenome (string configfile) {
 }
 
 
-SimpleFunction::~securegenome() {
+SimpleFunction::~SimpleFunction() {
 	for (int j = 0 ; j < n; j++){
 		delete[] lrnull[j];
 		delete[] lralternate[j];
