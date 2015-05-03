@@ -5,7 +5,7 @@ CXXLINK=-static -L/gpfs/home/cxs1031/backup/bin/lib
 SRCFILES=data.cpp  functions.cpp  roc.cpp  securegenome.cpp
 OBJFILES=$(SRCFILES:%.cpp=%.o)
 
-SRCSIMPLE=data.cpp functions.cpp roc.cpp simplefunction.cpp
+SRCSIMPLE=data.cpp functions.cpp roc.cpp privacy.cpp
 OBJSIMPLE=$(SRCSIMPLE:%.cpp=%.o)
 
 all:securegenome
@@ -16,7 +16,7 @@ all:securegenome
 securegenome:$(OBJFILES)
 	$(CXX) $(CXXLINK) -o $@ $^ -lgsl -lgslcblas
 	
-simplefunction:$(OBJSIMPLE)
+privacy:$(OBJSIMPLE)
 	$(CXX) $(CXXLINK) -o $@ $^ -lgsl -lgslcblas
 
 clean:

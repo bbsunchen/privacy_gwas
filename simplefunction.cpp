@@ -74,7 +74,7 @@ double SimpleFunction::singlesnplr (int genotype, double poolfreq, double reffre
     if (genotype == -1){
         lr = 0;
     }else{
-        lr = genotype * (poolfreq - reffreq)
+        lr = genotype * (poolfreq - reffreq);
     }
 	return lr;
 }
