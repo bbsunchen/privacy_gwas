@@ -16,6 +16,7 @@ using namespace std;
 #include <assert.h>
 #include <iomanip>
 #include <cstdlib>
+#include <time.h>       /* time */
 #ifdef WINDOWS
 	void gettimeofday( struct timeval* p, void* );
 #endif

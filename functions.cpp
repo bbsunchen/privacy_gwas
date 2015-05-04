@@ -1,12 +1,13 @@
 #include "std.h"
 #include "data.h"
 #include "functions.h"
+
 int functions::debug =  0;
 
 double functions::corr (int *x, int *y, int n) {
 	double mux, muy, muxy;
 	double mux2, muy2;
-	
+
 	int nxy = 0 ;
 	mux = muy = muxy = 0;
 	mux2 = muy2 = 0;
@@ -23,7 +24,7 @@ double functions::corr (int *x, int *y, int n) {
 		}
 	}
 
-	if (nxy <= 2 ) { 
+	if (nxy <= 2 ) {
 		return -1;
 	}
 	mux /= nxy;
@@ -46,7 +47,7 @@ double functions::corr (int *x, int *y, int n) {
 	double pval  = 2 * functions::tcdf (t, nxy-2);
 
 	return pval;
-	
+
 }
 
 double functions::tcdf ( double t, double df) {

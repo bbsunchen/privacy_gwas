@@ -1,6 +1,8 @@
 #include "privacy.h"
 #include "functions.h"
 #include "roc.h"
+#include "beta.h"
+#include "std.h"
 
 Privacy::Privacy (int pool_size, int nonpool_size, int snp_num) {
 	srand( time(0));
