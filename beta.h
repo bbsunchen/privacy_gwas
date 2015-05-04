@@ -1,9 +1,11 @@
-# Copyright 2015 Chen Sun
+// Copyright 2015 Chen Sun
 #ifndef BETA_H
 
 #define BETA_H
 #include "std.h"
 #include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
+
 class Beta {
 
 	public:
@@ -13,8 +15,8 @@ class Beta {
     private:
         double a;
         double b;
-        gsl_rng * r;
-
+        //const gsl_rng_type * T;
+		gsl_rng * r;
 };
 
 
