@@ -1,6 +1,7 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 #include <gsl/gsl_cdf.h>
+#include "std.h"
 
 class functions {
 	public:

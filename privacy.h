@@ -8,12 +8,13 @@ class Privacy {
 		~Privacy ();
 		double singlesnplr (int genotype, double poolfreq, double reffreq);
 		void computelr ();
-		void updatelrstatistics (double *totallrnull, double *totallralternate, int start, int end) ;
+		void updatelrstatistics () ;
 		void generate_allele_frequency();
 		int random_genotype(double freq);
 		int** generate_genotypes(int individuals, int snps);
 		void create_frequency_vectors ();
 		void get_roc (double *tprate, double *fprate);
+		int n;
 
     private:
 		double **lrnull;
@@ -21,11 +22,10 @@ class Privacy {
 		double *totallrnull;
 		double *totallralternate;
 
-		data *d;
 		int* sortedindex;
 		int retainedsnps;
 		int *retainedsnpindex ;
-		int n;
+
 		int nonpooln;
 		int totaln;
 		int debug;

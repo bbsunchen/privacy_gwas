@@ -52,7 +52,6 @@ Privacy::~Privacy() {
 	delete[] lralternate;
 	delete[] totallralternate;
 	delete[] totallrnull;
-	delete d;
 	retainedsnpindex = NULL;
 	sortedindex = NULL;
 
@@ -94,7 +93,7 @@ double Privacy::singlesnplr (int genotype, double poolfreq, double reffreq) {
 */
 void Privacy::generate_allele_frequency(){
     allele_freq = new double *[retainedsnps];
-    Beta *beta = new Beta();
+    Beta *beta = new Beta(0.840837782041, 0.841241895062);
     for (int i = 0; i < retainedsnps; i++){
         allele_freq[i] = beta->random_sample();
         if (debug == 1 || debug > 65535){
@@ -133,7 +132,7 @@ int** Privacy::generate_genotypes(int individuals, int snps){
 
 	for (int j = 0; j < individuals ;j++) {
 		for (int k = 0; k < snps; k++) {
-			genotypes[j][k] = random_genotype(allel_freq[k]);
+			genotypes[j][k] = random_genotype(allele_freq[k]);
 		}
 	}
 	return genotypes;
@@ -149,14 +148,14 @@ void Privacy::create_frequency_vectors () {
 	double sum = 0;
 	for (int i = 0; i <retainedsnps; i++){
 		sum = 0 ;
-		for (int j = 0 ; j < poolindividuals; j++)
+		for (int j = 0 ; j < n; j++)
 			sum  += poolgenotypes[j][i];
 		if (poolindividuals > 0)
 			sum /= (2*poolindividuals);
 		poolfreq[i] = sum;
 
 		sum = 0 ;
-		for (int j = 0 ; j < referenceindividuals; j++)
+		for (int j = 0 ; j < nonpooln; j++)
 			sum  += referencegenotypes[j][i];
 		if (referenceindividuals > 0)
 			sum /= (2*referenceindividuals);
@@ -171,9 +170,9 @@ void Privacy::create_frequency_vectors () {
 void Privacy::computelr () {
 
 	for (int i = 0 ; i < retainedsnps; i++){
-		double *poolfreq =  d->poolfreq;
-		double *nonpoolfreq = d->nonpoolfreq;
-		int **poolgenotypes = d->poolgenotypes;
+		//double *poolfreq =  d->poolfreq;
+		//double *nonpoolfreq = d->nonpoolfreq;
+		//int **poolgenotypes = d->poolgenotypes;
 		for (int j = 0; j < n; j++){
 			// Pool and reference frequencies under null and alternate.
 			double nullpoolfreq = (2*n*poolfreq[i]  - poolgenotypes[j][i])/(2*(n-1));
@@ -190,7 +189,7 @@ void Privacy::computelr () {
 
 /* Updates the total LR statistic for each individual with SNPs from start to end - 1.
  */
-void Privacy::updatelrstatistics (double *totallrnull, double *totallralternate) {
+void Privacy::updatelrstatistics () {
 	for (int j = 0 ; j < n; j++){
 		for (int i = 0; i < retainedsnps; i++){
 			totallrnull[j] += lrnull[j][i];
@@ -241,8 +240,8 @@ void Privacy::get_roc (double *tprate, double *fprate) {
 }
 
 int main (int argc, char *argv[]){
-	if (argc > 1) {
-		Privacy *privacy = new Privacy (argv[1]);
+	if (argc >= 1) {
+		Privacy *privacy = new Privacy (1000,2000,10000);
 		int n = privacy->n;
         double *tprate = new double [(2*n + 1)];
         double *fprate = new double [(2*n + 1)];
