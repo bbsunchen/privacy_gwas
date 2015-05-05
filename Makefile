@@ -8,7 +8,7 @@ OBJFILES=$(SRCFILES:%.cpp=%.o)
 SRCSIMPLE=beta.cpp functions.cpp roc.cpp privacy.cpp
 OBJSIMPLE=$(SRCSIMPLE:%.cpp=%.o)
 
-all:securegenome
+all:privacy
 
 %.o:%.cpp
 	$(CXX) $(CXXFLAGS) $< 

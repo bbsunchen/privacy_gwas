@@ -1,8 +1,10 @@
 #include "privacy.h"
 #include "functions.h"
 #include "roc.h"
-#include "beta.h"
 #include "std.h"
+#include "beta.h"
+//#include <gsl/gsl_rng.h>
+//#include <gsl/gsl_randist.h>
 
 Privacy::Privacy (int pool_size, int nonpool_size, int snp_num) {
 	srand( time(0));
@@ -17,7 +19,9 @@ Privacy::Privacy (int pool_size, int nonpool_size, int snp_num) {
 
     n = pool_size;
     nonpooln = nonpool_size;
-    retainedsnps = snp_num;
+    totaln = n + nonpooln;
+	//cout << n << "\t" << nonpooln << "\t" << totaln << endl;
+	retainedsnps = snp_num;
 
 	lrnull = new double *[n];
 	lralternate = new double *[n];
@@ -84,6 +88,8 @@ double Privacy::singlesnplr (int genotype, double poolfreq, double reffreq) {
 		default:
 		assert ("Unknown genotype");
 	}
+	if(debug == 6)
+		cout << genotype << "\t" << poolfreq << "\t" << reffreq << "\t" << lr << endl;
 	return lr;
 }
 
@@ -92,12 +98,19 @@ double Privacy::singlesnplr (int genotype, double poolfreq, double reffreq) {
     debug == 1 to debug this function
 */
 void Privacy::generate_allele_frequency(){
-    allele_freq = new double *[retainedsnps];
+    allele_freq = new double [retainedsnps];
     Beta *beta = new Beta(0.840837782041, 0.841241895062);
-    for (int i = 0; i < retainedsnps; i++){
+	//unsigned long int seed = 0;
+	//gsl_rng * r;
+	//gsl_rng_env_setup();
+	//gsl_rng_default_seed = seed;
+	//r = gsl_rng_alloc(gsl_rng_default);
+
+	for (int i = 0; i < retainedsnps; i++){
+        //allele_freq[i] = gsl_ran_beta(r, 0.840837782041, 0.841241895062);
         allele_freq[i] = beta->random_sample();
-        if (debug == 1 || debug > 65535){
-            cout << allele_freq << endl;
+		if (debug == 1 || debug > 65535){
+            cout << allele_freq[i] << endl;
         }
     }
 
@@ -150,16 +163,20 @@ void Privacy::create_frequency_vectors () {
 		sum = 0 ;
 		for (int j = 0 ; j < n; j++)
 			sum  += poolgenotypes[j][i];
-		if (poolindividuals > 0)
-			sum /= (2*poolindividuals);
+		if (n > 0)
+			sum /= (2*n);
 		poolfreq[i] = sum;
 
 		sum = 0 ;
 		for (int j = 0 ; j < nonpooln; j++)
 			sum  += referencegenotypes[j][i];
-		if (referenceindividuals > 0)
-			sum /= (2*referenceindividuals);
+		if (nonpooln > 0)
+			sum /= (2*nonpooln);
 		nonpoolfreq[i] = sum;
+
+		if(debug == 4){
+			cout << poolfreq[i] << "\t" << nonpoolfreq[i] << endl;
+		}
 	}
 
 }
@@ -176,12 +193,18 @@ void Privacy::computelr () {
 		for (int j = 0; j < n; j++){
 			// Pool and reference frequencies under null and alternate.
 			double nullpoolfreq = (2*n*poolfreq[i]  - poolgenotypes[j][i])/(2*(n-1));
+			//cout << poolfreq[i] << "\t" <<poolgenotypes[j][i] << "\t" << nullpoolfreq << endl; 
 			double nullreffreq  = (2*(n-1)*nullpoolfreq + 2 * nonpooln * nonpoolfreq[i]) / (2*(totaln - 1));
+			//cout << totaln << endl;
+			//cout << nullpoolfreq << "\t" << nonpooln << "\t" << nonpoolfreq[i] << "\t" << totaln << "\t" << nullreffreq << endl;
 
 			double alternatepoolfreq = poolfreq[i] ;
 			double alternatereffreq = (2*n*alternatepoolfreq + 2* nonpooln * nonpoolfreq[i]) /(2*totaln);
 			lrnull [j][i] = singlesnplr (poolgenotypes[j][i], nullpoolfreq, nullreffreq);
 			lralternate [j][i] = singlesnplr (poolgenotypes[j][i], alternatepoolfreq, alternatereffreq);
+			if (debug == 5){
+				cout << lrnull[j][i] << "\t" << lralternate[j][i] << endl;
+			}
 		}
 	}
 }
@@ -210,9 +233,9 @@ void Privacy::get_roc (double *tprate, double *fprate) {
 		totallrnull[j] = 0;
 		totallralternate[j] = 0 ;
 	}
-	updatelrstatistics (totallrnull, totallralternate);
+	updatelrstatistics ();
 	roc::makeroc (totallrnull, totallralternate, n, n, tprate, fprate);
-	if (debug > 65535) {
+	if (debug == 3 || debug > 65535) {
 			ostringstream oss;
 			oss << "lr" << ".txt";
 			string osfile = oss.str();
@@ -239,13 +262,40 @@ void Privacy::get_roc (double *tprate, double *fprate) {
 	//return power;
 }
 
+void refine_rate(double* tprate_temp, double* fprate_temp, int size, vector<double> & tprate, vector<double> & fprate){
+	double fp = -1;
+	double tp = -1;
+	for (int i = 0; i < size; i++){
+		if (fp == fprate_temp[i]){
+			if(tp < tprate_temp[i])
+				tp = tprate_temp[i];
+		}else{
+			if(fp != -1){
+				fprate.push_back(fp);
+				tprate.push_back(tp);
+			}
+			fp = fprate_temp[i];
+		}
+	}
+}
+
 int main (int argc, char *argv[]){
+	//return 0;
+	double pi = 3.14149265358979;
+	cout.precision(15);
+	cout << pi << endl;
 	if (argc >= 1) {
 		Privacy *privacy = new Privacy (1000,2000,10000);
 		int n = privacy->n;
-        double *tprate = new double [(2*n + 1)];
-        double *fprate = new double [(2*n + 1)];
-        privacy->get_roc(tprate, fprate);
+        double *tprate_temp = new double [(2*n + 1)];
+        double *fprate_temp = new double [(2*n + 1)];
+        privacy->get_roc(tprate_temp, fprate_temp);
+		vector<double> tprate;
+		vector<double> fprate;
+		refine_rate(tprate_temp, fprate_temp, 2*n+1, tprate, fprate);
+		for (int i = 0; i < tprate.size(); i++){
+			cout << fprate[i] << "\t" << tprate[i] << endl;
+		}
 		delete privacy;
 	} else {
 		cerr << "Usage: " <<argv[0] << " <config file> "<<endl;

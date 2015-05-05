@@ -35,7 +35,7 @@ double functions::corr (int *x, int *y, int n) {
 	double sx = sqrt(mux2 - mux*mux);
 	double sy = sqrt(muy2 - muy*muy);
 	double rho = (muxy - mux * muy )/ (sx*sy);
-	if (data::debug >= 2 ) {
+	if (functions::debug >= 2 ) {
 		cout << "mux=" << mux <<"\tmuy=" << muy << "\tmuxy=" << muxy <<"\tmux2=" << mux2 << "\tmuy2=" << muy2 << endl;
 		cout << "sx="<<sx << "\tsy="<<sy<<endl;
 		cout << "rho = " << rho << endl;
