@@ -11,12 +11,21 @@ If you want to compile from source code, g++ and GSL(http://www.gnu.org/software
 
 # Usage:
 ./privacy output_filename pretreat_mode=0 test_mode=0
+
 pretreat_mode:
+
         0 directly compute allele frequency in pool
+        
         1 round allele frequency to precision 0.01
+        
         2 round allele frequency to precision 0.1
+        
         3 add Gaussian error with mean 0 and sigma 0.01
+        
 test_mode:
+
         0 LR test
+        
         1 T1 test
+        
         2 T2 test
