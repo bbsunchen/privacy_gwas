@@ -4,10 +4,12 @@
 class Privacy {
 
 	public:
-		Privacy (int pool_size, int nonpool_size, int snp_num);
+		Privacy (int pool_size, int nonpool_size, int snp_num, int frequency_mode, int score_mode);
 		~Privacy ();
 		double singlesnplr (int genotype, double poolfreq, double reffreq);
-		void computelr ();
+		double singlesnp_t1 (int genotype, double poolfreq, double reffreq);
+		double singlesnp_t2 (int genotype, int fresh_genotype, double poolfreq, double reffreq);
+		void compute_score (int score_mode);
 		void updatelrstatistics () ;
 		void generate_allele_frequency();
 		int random_genotype(double freq);
@@ -15,6 +17,7 @@ class Privacy {
 		void create_frequency_vectors ();
 		void get_roc (double* tprate, double* fprate);
 		void output(char* filename);
+		void change_frequency(int mode);
 		int n;
 
     private:
@@ -40,7 +43,7 @@ class Privacy {
         // Matrix of reference genotypes (referenceindividuals X snps)
         // After call to prune_snps(), matrix of retained reference genotypese (referenceindividuals X retained SNPs)
         int **referencegenotypes ;
-
+		int *freshgenotypes;
         // Allele frequency of SNPs in the pool
         double *poolfreq;
 

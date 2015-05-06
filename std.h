@@ -17,6 +17,7 @@ using namespace std;
 #include <iomanip>
 #include <cstdlib>
 #include <time.h>       /* time */
+#include <string.h>
 #ifdef WINDOWS
 	void gettimeofday( struct timeval* p, void* );
 #endif
