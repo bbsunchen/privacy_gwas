@@ -222,6 +222,29 @@ void Privacy::updatelrstatistics () {
 }
 
 
+void Privacy::output(char* filename){
+	
+	for (int j = 0; j < n; j++){
+		totallrnull[j] = 0;
+		totallralternate[j] = 0;
+	}
+	updatelrstatistics();
+	ofstream output;
+	output.open(filename);
+	output << "score\tlabel" << endl;
+	
+	for (int j = 0; j < n; j++){
+		output << totallrnull[j] << "\t" << 0 << endl;
+	}
+
+	for (int j = 0; j < n; j++){
+		output << totallralternate[j] << "\t" << 1 << endl;
+	}
+
+	output.close();
+
+}
+
 /* Compute power of the LR test when SNPs from start to end - 1 are included in the
  * current set of SNPs
  */
@@ -259,6 +282,14 @@ void Privacy::get_roc (double *tprate, double *fprate) {
 
 	//delete[] tprate;
 	//delete[] fprate;
+	
+	//ofstream output;
+	//output.open(filename);
+	//output << "fp\ttp" << endl;
+	//for (int j = 0; j < 2*n+1; j++){
+	//	output << fprate[j] << "\t" << tprate[j] << endl;
+	//}
+	//output.close();
 	//return power;
 }
 
@@ -270,7 +301,7 @@ void refine_rate(double* tprate_temp, double* fprate_temp, int size, vector<doub
 			if(tp < tprate_temp[i])
 				tp = tprate_temp[i];
 		}else{
-			if(fp != -1){
+			if(fp > 0){
 				fprate.push_back(fp);
 				tprate.push_back(tp);
 			}
@@ -285,18 +316,49 @@ int main (int argc, char *argv[]){
 	cout.precision(15);
 	cout << pi << endl;
 	if (argc >= 1) {
-		Privacy *privacy = new Privacy (1000,2000,10000);
-		int n = privacy->n;
-        double *tprate_temp = new double [(2*n + 1)];
-        double *fprate_temp = new double [(2*n + 1)];
-        privacy->get_roc(tprate_temp, fprate_temp);
-		vector<double> tprate;
-		vector<double> fprate;
-		refine_rate(tprate_temp, fprate_temp, 2*n+1, tprate, fprate);
-		for (int i = 0; i < tprate.size(); i++){
-			cout << fprate[i] << "\t" << tprate[i] << endl;
+		
+		vector<double> average_tprate;
+		vector<double> average_fprate;
+		
+		double iteration = 10.0;
+		for(int iter = 0; iter < iteration; iter++){
+			Privacy *privacy = new Privacy (1000,2000,10000);
+			
+			int n = privacy->n;
+			double *tprate_temp = new double [(2*n + 1)];
+			double *fprate_temp = new double [(2*n + 1)];
+			privacy->get_roc(tprate_temp, fprate_temp);
+			vector<double> tprate;
+			vector<double> fprate;
+			refine_rate(tprate_temp, fprate_temp, 2*n+1, tprate, fprate);
+			
+			if (iter == 0){
+				for(int i = 0; i < tprate.size(); i++){
+					average_tprate.push_back(tprate[i]);
+					average_fprate.push_back(fprate[i]);
+				}
+			}else{
+
+				for(int i = 0; i < tprate.size(); i++){
+					if(fprate[i] != average_fprate[i])
+						cout << "Error..." << endl;
+					average_tprate[i] += tprate[i];
+				}
+			}
+			//tprate.clear();
+			//fprate.clear();
+			//cout << "breakpoint 1" << endl;
+			delete privacy;
 		}
-		delete privacy;
+		ofstream output;
+		output.open(argv[1]);
+		output << "fp\ttp" << endl;
+		for (int i = 0; i < average_fprate.size(); i++){
+			output << average_fprate[i] << "\t" << average_tprate[i]/iteration << endl;
+		}
+		
+		output.close();
+
 	} else {
 		cerr << "Usage: " <<argv[0] << " <config file> "<<endl;
 		exit (1);

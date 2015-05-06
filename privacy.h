@@ -13,7 +13,8 @@ class Privacy {
 		int random_genotype(double freq);
 		int** generate_genotypes(int individuals, int snps);
 		void create_frequency_vectors ();
-		void get_roc (double *tprate, double *fprate);
+		void get_roc (double* tprate, double* fprate);
+		void output(char* filename);
 		int n;
 
     private:
