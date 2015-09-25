@@ -1,0 +1,16 @@
+\begin{thebibliography}{1}
+
+\bibitem{homer2008resolving}
+Nils Homer, Szabolcs Szelinger, Margot Redman, David Duggan, Waibhav Tembe,
+  Jill Muehling, John~V Pearson, Dietrich~A Stephan, Stanley~F Nelson, and
+  David~W Craig.
+\newblock Resolving individuals contributing trace amounts of dna to highly
+  complex mixtures using high-density snp genotyping microarrays.
+\newblock {\em PLoS genetics}, 4(8):e1000167, 2008.
+
+\bibitem{sankararaman2009genomic}
+Sriram Sankararaman, Guillaume Obozinski, Michael~I Jordan, and Eran Halperin.
+\newblock Genomic privacy and limits of individual detection in a pool.
+\newblock {\em Nature genetics}, 41(9):965--967, 2009.
+
+\end{thebibliography}
